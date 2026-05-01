@@ -69,21 +69,3 @@ CREATE POLICY "Profile Isolation" ON profiles
 FOR SELECT USING (
     organization_id = (SELECT organization_id FROM profiles WHERE id = auth.uid())
 );
--- FUNCIÓN DE SEGURIDAD: BORRADO CON DOBLE LLAVE
--- Requiere dos llaves distintas para ejecutar una limpieza de tablas
-CREATE OR REPLACE FUNCTION dangerous_wipe_data(key_one TEXT, key_two TEXT)
-RETURNS TEXT AS $$
-DECLARE
-    -- En producción, estos hashes se comparan contra variables de entorno seguras
-    secret_a TEXT := 'FRASE_SECRETA_ADMIN_A'; 
-    secret_b TEXT := 'FRASE_SECRETA_ADMIN_B';
-BEGIN
-    IF key_one = secret_a AND key_two = secret_b THEN
-        -- Borrado en cascada de datos operativos, no de configuración
-        TRUNCATE TABLE customers, profiles CASCADE;
-        RETURN 'Operación exitosa: Base de datos reiniciada bajo protocolo de doble llave.';
-    ELSE
-        RAISE EXCEPTION 'Error de seguridad: Las llaves de autorización no coinciden.';
-    END IF;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
