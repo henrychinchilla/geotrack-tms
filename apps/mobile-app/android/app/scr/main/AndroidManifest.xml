@@ -1,25 +1,27 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.geotracktms.app">
+<manifest xmlns:android="http://schemas.android.com/apk/apk/api/res/android">
 
-    <!-- Permisos para GPS y Monitoreo en Tiempo Real -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     
-    <!-- Permiso para que la app no se cierre al estar en segundo plano -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
         android:label="GeoTrack TMS"
         android:icon="@mipmap/ic_launcher">
         
-        <!-- Servicio que mantiene el GPS activo mientras el repartidor está en ruta -->
         <service
             android:name=".services.LocationService"
-            android:foregroundServiceType="location"
             android:enabled="true"
-            android:exported="false" />
-            
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/LaunchTheme">
+            </activity>
     </application>
 </manifest>
