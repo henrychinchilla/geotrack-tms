@@ -1,44 +1,41 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useVehiculos } from '@/hooks/useVehiculos';
 
-export default function Dashboard() {
-  const [stats, setStats] = useState({ total: 0, criticos: 0, gastos: 0 });
+export default function DashboardPage() {
+  const { vehiculos, loading, error } = useVehiculos();
 
-  useEffect(() => {
-    async function cargarResumen() {
-      const { count: total } = await supabase.from('vehiculos').select('*', { count: 'exact', head: true });
-      const { count: criticos } = await supabase.from('salud_vehiculo').select('*', { count: 'exact', head: true }).eq('gravedad', 'Critica');
-      const { data: gastos } = await supabase.from('gastos_mantenimiento').select('monto');
-      
-      const totalGastos = gastos?.reduce((acc, curr) => acc + curr.monto, 0) || 0;
-      setStats({ total: total || 0, criticos: criticos || 0, gastos: totalGastos });
-    }
-    cargarResumen();
-  }, []);
+  if (loading) return <div className="p-10 text-center font-sans">Cargando flota de GeoTrack...</div>;
+  if (error) return <div className="p-10 text-center font-sans text-red-500">Error: {error}</div>;
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-slate-800 mb-6">Panel de Control GeoTrack</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
-          <p className="text-slate-500 font-medium">Flota Total</p>
-          <p className="text-4xl font-bold text-slate-800">{stats.total} Unidades</p>
-        </div>
-        
-        <div className={`p-6 rounded-2xl shadow-sm border-l-4 ${stats.criticos > 0 ? 'bg-red-50 border-red-500' : 'bg-white border-green-500'}`}>
-          <p className="text-slate-500 font-medium">Alertas Críticas</p>
-          <p className={`text-4xl font-bold ${stats.criticos > 0 ? 'text-red-600' : 'text-green-600'}`}>
-            {stats.criticos} {stats.criticos === 1 ? 'Camión' : 'Camiones'}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
-          <p className="text-slate-500 font-medium">Inversión en Mantenimiento</p>
-          <p className="text-4xl font-bold text-slate-800">Q{stats.gastos.toLocaleString()}</p>
-        </div>
+    <main className="p-8 font-sans">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800">GeoTrack TMS - Dashboard</h1>
+        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
+          {vehiculos.length} Unidades
+        </span>
       </div>
-    </div>
+
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="p-4 font-semibold text-gray-600">Placa</th>
+              <th className="p-4 font-semibold text-gray-600">Vehículo</th>
+              <th className="p-4 font-semibold text-gray-600">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vehiculos.map((v) => (
+              <tr key={v.id} className="border-t hover:bg-gray-50">
+                <td className="p-4 font-bold text-blue-600">{v.placa}</td>
+                <td className="p-4 text-gray-700">{v.marca} {v.modelo}</td>
+                <td className="p-4 text-xs font-bold uppercase">{v.estado}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
   );
 }

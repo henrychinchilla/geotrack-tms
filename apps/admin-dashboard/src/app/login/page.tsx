@@ -1,24 +1,28 @@
 'use client';
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const supabase = createClientComponentClient();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert('Error: ' + error.message);
-    else window.location.href = '/'; // Al dashboard exitoso
+    if (error) alert(error.message);
+    else window.location.href = '/';
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '100px' }}>
-      <h1>GeoTrack TMS - Acceso</h1>
-      <input type="email" placeholder="Correo" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Entrar al Sistema</button>
+    <div className="flex justify-center mt-20 font-sans">
+      <form onSubmit={handleLogin} className="flex flex-col gap-4 w-80 p-6 border rounded shadow">
+        <h2 className="text-center font-bold text-xl">GeoTrack TMS Login</h2>
+        <input type="email" placeholder="Correo" className="border p-2" onChange={e => setEmail(e.target.value)} required />
+        <input type="password" placeholder="Contraseña" className="border p-2" onChange={e => setPassword(e.target.value)} required />
+        <button type="submit" className="bg-blue-600 text-white p-2 rounded">Entrar</button>
+      </form>
     </div>
   );
 }
