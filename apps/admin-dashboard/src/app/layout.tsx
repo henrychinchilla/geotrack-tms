@@ -1,11 +1,17 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'GeoTrack TMS - Panel de Administración',
   description: 'Sistema de Gestión de Transporte y Logística',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
