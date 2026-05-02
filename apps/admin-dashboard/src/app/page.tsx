@@ -6,7 +6,6 @@ import { useKPIs } from '@/hooks/useKPIs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-// LIMITE DE KILOMETRAJE PARA ALERTA PREVENTIVA (Ej. 10,000 km)
 const LIMITE_KM_SERVICIO = 10000; 
 
 export default function DashboardPage() {
@@ -24,7 +23,6 @@ export default function DashboardPage() {
   if (!autorizado || loading) return <div className="p-10 text-center font-sans font-bold text-blue-600">Verificando credenciales y cargando flota...</div>;
   if (error) return <div className="p-10 text-center font-sans text-red-500 font-bold">Error: {error}</div>;
 
-  // Calculamos cuántos camiones están en alerta roja
   const unidadesEnRiesgo = vehiculos.filter(v => v.km_desde_servicio !== undefined && v.km_desde_servicio > LIMITE_KM_SERVICIO).length;
 
   return (
@@ -36,7 +34,10 @@ export default function DashboardPage() {
           <p className="text-gray-500 font-medium">Panel de Control Operativo y Financiero</p>
         </div>
         <div className="flex gap-4">
-          <a href="/registro" className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition">
+          <a href="/viajes" className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition flex items-center gap-2">
+            📍 GESTIÓN DE VIAJES
+          </a>
+          <a href="/registro" className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition flex items-center gap-2">
             + NUEVA UNIDAD
           </a>
           <button onClick={() => { supabase.auth.signOut(); window.location.href = '/login'; }} className="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
@@ -63,7 +64,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Nueva Tarjeta de Riesgo */}
         <div className={`p-6 rounded-xl shadow-sm border-l-4 ${unidadesEnRiesgo > 0 ? 'bg-red-50 border-red-600' : 'bg-white border-green-500'}`}>
           <h3 className={`text-sm font-bold uppercase tracking-wider mb-1 ${unidadesEnRiesgo > 0 ? 'text-red-800' : 'text-gray-400'}`}>
             Alertas de Servicio
@@ -87,19 +87,18 @@ export default function DashboardPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {vehiculos.map((v) => {
-              // Lógica de Semáforo
               let desgasteColor = "text-gray-500";
               let desgasteText = "Sin registro previo";
               
               if (v.km_desde_servicio !== undefined && v.ultimo_servicio_km) {
                   if (v.km_desde_servicio > LIMITE_KM_SERVICIO) {
-                      desgasteColor = "text-red-600 bg-red-100 font-black border-red-300 border"; // Rojo (Peligro)
+                      desgasteColor = "text-red-600 bg-red-100 font-black border-red-300 border"; 
                       desgasteText = `Excedido: +${v.km_desde_servicio.toLocaleString()} km`;
                   } else if (v.km_desde_servicio > (LIMITE_KM_SERVICIO * 0.8)) {
-                      desgasteColor = "text-orange-700 bg-orange-100 font-bold"; // Naranja (Advertencia - 80% usado)
+                      desgasteColor = "text-orange-700 bg-orange-100 font-bold"; 
                       desgasteText = `Próximo: ${v.km_desde_servicio.toLocaleString()} km`;
                   } else {
-                      desgasteColor = "text-green-700 bg-green-50 font-medium"; // Verde (Ok)
+                      desgasteColor = "text-green-700 bg-green-50 font-medium"; 
                       desgasteText = `Óptimo: ${v.km_desde_servicio.toLocaleString()} km`;
                   }
               }
