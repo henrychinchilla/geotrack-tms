@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build --prefix apps/admin-dashboard",
-  "installCommand": "npm install --prefix apps/admin-dashboard",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }
