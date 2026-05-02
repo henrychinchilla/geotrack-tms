@@ -1,6 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "cd apps/admin-dashboard && npm run build",
+  "installCommand": "cd apps/admin-dashboard && npm install",
   "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install"
+  "outputDirectory": "apps/admin-dashboard/.next"
 }
