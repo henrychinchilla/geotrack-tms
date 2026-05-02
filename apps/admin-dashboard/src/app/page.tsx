@@ -1,26 +1,46 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import { useVehiculos } from '@/hooks/useVehiculos';
 import { useKPIs } from '@/hooks/useKPIs';
 
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+
 export default function DashboardPage() {
+  const [autorizado, setAutorizado] = useState(false);
   const { vehiculos, loading, error } = useVehiculos();
   const { totalGastos, loadingKPIs } = useKPIs();
 
-  if (loading) return <div className="p-10 text-center font-sans font-bold">Cargando módulos de GeoTrack...</div>;
+  // Verificación de seguridad correcta (lee el LocalStorage)
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        window.location.href = '/login'; // Si no hay sesión real, pa'fuera
+      } else {
+        setAutorizado(true); // Acceso concedido
+      }
+    });
+  }, []);
+
+  if (!autorizado || loading) return <div className="p-10 text-center font-sans font-bold text-blue-600">Verificando credenciales y cargando flota...</div>;
   if (error) return <div className="p-10 text-center font-sans text-red-500 font-bold">Error: {error}</div>;
 
   return (
     <main className="p-8 font-sans bg-gray-50 min-h-screen">
-      
       {/* Cabecera */}
       <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-3xl font-black text-gray-900">GeoTrack TMS</h1>
           <p className="text-gray-500 font-medium">Panel de Control Operativo y Financiero</p>
         </div>
-        <a href="/registro" className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition">
-          + NUEVA UNIDAD
-        </a>
+        <div className="flex gap-4">
+          <a href="/registro" className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition">
+            + NUEVA UNIDAD
+          </a>
+          <button onClick={() => { supabase.auth.signOut(); window.location.href = '/login'; }} className="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+            Salir
+          </button>
+        </div>
       </div>
 
       {/* Tarjetas de KPIs (El Dinero y la Flota) */}
