@@ -33,14 +33,17 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-black text-gray-900">GeoTrack TMS</h1>
           <p className="text-gray-500 font-medium">Panel de Control Operativo y Financiero</p>
         </div>
-        <div className="flex gap-4">
-          <a href="/viajes" className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition flex items-center gap-2">
+        <div className="flex gap-3 flex-wrap justify-end">
+          <a href="/pilotos" className="bg-teal-600 text-white px-5 py-3 rounded-lg font-bold shadow-md hover:bg-teal-700 transition flex items-center gap-2 text-sm">
+            👥 RRHH PILOTOS
+          </a>
+          <a href="/viajes" className="bg-indigo-600 text-white px-5 py-3 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
             📍 GESTIÓN DE VIAJES
           </a>
-          <a href="/registro" className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition flex items-center gap-2">
+          <a href="/registro" className="bg-blue-700 text-white px-5 py-3 rounded-lg font-bold shadow-md hover:bg-blue-800 transition flex items-center gap-2 text-sm">
             + NUEVA UNIDAD
           </a>
-          <button onClick={() => { supabase.auth.signOut(); window.location.href = '/login'; }} className="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+          <button onClick={() => { supabase.auth.signOut(); window.location.href = '/login'; }} className="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition text-sm">
             Salir
           </button>
         </div>
