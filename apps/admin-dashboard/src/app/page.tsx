@@ -30,10 +30,11 @@ export default function MonitorPage() {
           .limit(20);
 
         if (error) throw error;
+        
         setVisitas(data || []);
       } catch (err: any) {
-        setError('Error al cargar los datos');
         console.error(err);
+        setError('Error al cargar los datos. Verifica tu conexión.');
       } finally {
         setLoading(false);
       }
@@ -43,13 +44,6 @@ export default function MonitorPage() {
   }, []);
 
   const abrirWaze = (lat?: number, lng?: number) => {
-    if (!lat || !lng) return alert('Coordenadas no disponibles');
-    window.open(`https://waze.com/ul?ll=\( {lat}, \){lng}&navigate=yes`, '_blank');
-  };
-
-  const abrirGoogleMaps = (lat?: number, lng?: number) => {
-    if (!lat || !lng) return alert('Coordenadas no disponibles');
-    window.open(`https://www.google.com/maps/search/?api=1&query=\( {lat}, \){lng}`, '_blank');
-  };
-
-  if (loading) return <div className="
+    if (!lat || !lng) {
+      alert('Coordenadas GPS no disponibles.');
+      return;
