@@ -10,19 +10,19 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Rutas públicas (no requieren login)
+  // Rutas que no requieren autenticación
   const publicPaths = ['/login', '/auth/callback']
 
-  const isPublicPath = publicPaths.some(path => 
+  const isPublicPath = publicPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path)
   )
 
-  // Si no está logueado y no está en ruta pública → redirigir a login
+  // Si no hay usuario y no está en ruta pública → redirigir a login
   if (!user && !isPublicPath) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // Si está logueado y va al login → redirigir al dashboard
+  // Si ya está logueado y entra al login → redirigir al dashboard
   if (user && req.nextUrl.pathname === '/login') {
     return NextResponse.redirect(new URL('/', req.url))
   }
@@ -30,6 +30,7 @@ export async function middleware(req: NextRequest) {
   return res
 }
 
+// Configuración para que se ejecute en todas las rutas excepto archivos estáticos
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
