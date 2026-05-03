@@ -5,29 +5,10 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
-// Funciones útiles de autenticación
-export const signInWithEmail = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-  return { data, error }
-}
-
-export const signUp = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
-  return { data, error }
-}
-
-export const signOut = async () => {
-  const { error } = await supabase.auth.signOut()
-  return error
-}
-
-export const getCurrentUser = async () => {
+// Helpers de autenticación
+export const getUser = async () => {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
+
+export const signOut = async () => await supabase.auth.signOut()
