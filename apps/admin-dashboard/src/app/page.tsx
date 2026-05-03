@@ -1,37 +1,55 @@
-{
-  "name": "geotrack-admin-dashboard",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix"
-  },
-  "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
-    "@supabase/ssr": "^0.3.0",
-    "@supabase/supabase-js": "^2.105.1",
-    "clsx": "^2.1.1",
-    "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.7",
-    "lucide-react": "^0.378.0",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-dom": "^18",
-    "recharts": "^2.12.7",
-    "tailwind-merge": "^2.3.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.5.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3",
-    "postcss": "^8.5.13",
-    "tailwindcss": "^3.4.19",
-    "typescript": "^5"
-  }
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { CheckCircle, Navigation, MapPin, Clock } from 'lucide-react';
+
+interface Visita {
+  id: string;
+  completed_at: string;
+  customers?: {
+    business_name: string;
+    tax_id: string;
+    latitude?: number;
+    longitude?: number;
+  };
+}
+
+export default function MonitorPage() {
+  const [visitas, setVisitas] = useState<Visita[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchVisitas = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('sales_visits')
+          .select('*, customers(business_name, tax_id, latitude, longitude)')
+          .order('completed_at', { ascending: false })
+          .limit(20);
+
+        if (error) throw error;
+        setVisitas(data || []);
+      } catch (err: any) {
+        setError('Error al cargar los datos');
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
+    };
+
+    fetchVisitas();
+  }, []);
+
+  const abrirWaze = (lat?: number, lng?: number) => {
+    if (!lat || !lng) return alert('Coordenadas no disponibles');
+    window.open(`https://waze.com/ul?ll=\( {lat}, \){lng}&navigate=yes`, '_blank');
+  };
+
+  const abrirGoogleMaps = (lat?: number, lng?: number) => {
+    if (!lat || !lng) return alert('Coordenadas no disponibles');
+    window.open(`https://www.google.com/maps/search/?api=1&query=\( {lat}, \){lng}`, '_blank');
+  };
+
+  if (loading) return <div className="
