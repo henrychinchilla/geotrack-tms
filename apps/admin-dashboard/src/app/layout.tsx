@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata = {
   title: 'GeoTrack TMS - Panel de Administración',
   description: 'Sistema de Gestión de Transporte y Logística',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default async function RootLayout({
@@ -18,30 +21,29 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Obtener usuario actual (Server Component)
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
     <html lang="es">
       <body className={inter.className}>
         <main className="min-h-screen bg-gray-50">
-          {/* Navbar simple */}
+          {/* Navbar solo si está logueado */}
           {user && (
-            <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
+            <nav className="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50">
               <div className="flex items-center gap-3">
-                <div className="font-bold text-xl text-blue-600">GeoTrack TMS</div>
-                <span className="text-sm text-gray-500">Centro de Mando</span>
+                <div className="font-black text-2xl tracking-tight text-blue-600">GEOTRACK</div>
+                <span className="text-sm text-gray-500 font-medium">TMS</span>
               </div>
               
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 hidden md:block">
                   {user.email}
                 </span>
                 <LogoutButton />
               </div>
             </nav>
           )}
-          
+
           {children}
         </main>
       </body>
